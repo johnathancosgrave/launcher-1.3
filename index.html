@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Private Browser</title>
   <style>
     body {
@@ -43,16 +43,16 @@
     <input id="url" type="text" placeholder="Search or enter URL" />
     <button id="go">Go</button>
   </div>
-  <webview id="webview" src="https://duckduckgo.com" partition="persist:none" allowpopups></webview>
+  <!-- Here is the webview element -->
+  <webview id="webview" src="https://duckduckgo.com" allowpopups></webview>
 
   <script>
     const urlInput = document.getElementById('url');
     const goBtn = document.getElementById('go');
     const webview = document.getElementById('webview');
 
-    // Search or URL logic
     function isLikelyURL(input) {
-      return input.startsWith('http://') || input.startsWith('https://') || input.includes('.') && !input.includes(' ');
+      return input.startsWith('http://') || input.startsWith('https://') || (input.includes('.') && !input.includes(' '));
     }
 
     function navigate() {
@@ -60,13 +60,11 @@
       let url;
 
       if (isLikelyURL(input)) {
-        // Likely a URL
         if (!input.startsWith('http')) {
           input = 'https://' + input;
         }
         url = input;
       } else {
-        // Treat as search query using DuckDuckGo
         const query = encodeURIComponent(input);
         url = `https://duckduckgo.com/?q=${query}`;
       }
@@ -77,6 +75,11 @@
     goBtn.addEventListener('click', navigate);
     urlInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') navigate();
+    });
+
+    webview.addEventListener('did-fail-load', (event) => {
+      console.error('Webview failed to load:', event);
+      alert(`Failed to load: ${event.validatedURL}`);
     });
   </script>
 </body>
