@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Private Browser</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: white;
+    }
+    #bar {
+      display: flex;
+      padding: 10px;
+      background: #2c2c2c;
+    }
+    #url {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      font-size: 16px;
+      background-color: #444;
+      color: white;
+    }
+    #go {
+      padding: 8px 12px;
+      background-color: #555;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    webview {
+      width: 100%;
+      height: calc(100vh - 50px);
+      border: none;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="bar">
+    <input id="url" type="text" placeholder="Search or enter URL" />
+    <button id="go">Go</button>
+  </div>
+  <webview id="webview" src="https://duckduckgo.com" partition="persist:none" allowpopups></webview>
+
+  <script>
+    const urlInput = document.getElementById('url');
+    const goBtn = document.getElementById('go');
+    const webview = document.getElementById('webview');
+
+    // Search or URL logic
+    function isLikelyURL(input) {
+      return input.startsWith('http://') || input.startsWith('https://') || input.includes('.') && !input.includes(' ');
+    }
+
+    function navigate() {
+      let input = urlInput.value.trim();
+      let url;
+
+      if (isLikelyURL(input)) {
+        // Likely a URL
+        if (!input.startsWith('http')) {
+          input = 'https://' + input;
+        }
+        url = input;
+      } else {
+        // Treat as search query using DuckDuckGo
+        const query = encodeURIComponent(input);
+        url = `https://duckduckgo.com/?q=${query}`;
+      }
+
+      webview.src = url;
+    }
+
+    goBtn.addEventListener('click', navigate);
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') navigate();
+    });
+  </script>
+</body>
+</html>
